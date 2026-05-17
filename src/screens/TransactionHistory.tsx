@@ -1,62 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { TransactionCard } from '../components/TransactionCard';
 import { ArrowLeft, Filter } from 'lucide-react';
 
+interface Transaction {
+  id: string;
+  amount: number;
+  status: 'success' | 'rejected' | 'pending' | 'aborted';
+  created_at: string;
+  reference: string;
+  type: 'sent' | 'received';
+  senderUsername?: string;
+  receiverUsername?: string;
+}
+
 export function TransactionHistory() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'all' | 'successful' | 'rejected'>('all');
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const allTransactions = [
-    {
-      receiverUsername: 'vegetable_market_01',
-      amount: 250,
-      timestamp: '13/05/2026 14:30:22',
-      status: 'success' as const,
-    },
-    {
-      receiverUsername: 'bus_service_05',
-      amount: 50,
-      timestamp: '13/05/2026 12:15:10',
-      status: 'success' as const,
-    },
-    {
-      receiverUsername: 'utility_electric',
-      amount: 800,
-      timestamp: '13/05/2026 09:00:45',
-      status: 'success' as const,
-    },
-    {
-      receiverUsername: 'fish_market_03',
-      amount: 450,
-      timestamp: '12/05/2026 18:45:30',
-      status: 'rejected' as const,
-    },
-    {
-      receiverUsername: 'school_fees_dept',
-      amount: 1200,
-      timestamp: '12/05/2026 10:20:15',
-      status: 'success' as const,
-    },
-    {
-      receiverUsername: 'transport_service_02',
-      amount: 75,
-      timestamp: '11/05/2026 16:30:00',
-      status: 'success' as const,
-    },
-    {
-      receiverUsername: 'market_vendor_12',
-      amount: 320,
-      timestamp: '11/05/2026 14:00:22',
-      status: 'rejected' as const,
-    },
-    {
-      receiverUsername: 'utility_water',
-      amount: 600,
-      timestamp: '11/05/2026 08:15:45',
-      status: 'success' as const,
-    },
-  ];
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+        if (!user.username) {
+          console.error('User not found in session');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `${import.meta.env?.VITE_BACKEND_URL || 'http://localhost:5000'}/transactions/${user.username}`
+        );
+        const data = await response.json();
+
+        if (data.status === 'success' && data.transactions) {
+          setAllTransactions(data.transactions);
+        }
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   const filteredTransactions = allTransactions.filter((transaction) => {
     if (activeTab === 'all') return true;
@@ -116,10 +106,22 @@ export function TransactionHistory() {
           </div>
 
           <div className="p-4">
-            {filteredTransactions.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading transactions...</p>
+              </div>
+            ) : filteredTransactions.length > 0 ? (
               <div className="space-y-3">
-                {filteredTransactions.map((transaction, index) => (
-                  <TransactionCard key={index} {...transaction} />
+                {filteredTransactions.map((transaction) => (
+                  <TransactionCard
+                    key={transaction.id}
+                    type={transaction.type}
+                    amount={transaction.amount}
+                    status={transaction.status}
+                    timestamp={new Date(transaction.created_at).toLocaleString()}
+                    senderUsername={transaction.senderUsername}
+                    receiverUsername={transaction.receiverUsername}
+                  />
                 ))}
               </div>
             ) : (

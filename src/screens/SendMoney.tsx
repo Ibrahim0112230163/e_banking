@@ -12,14 +12,15 @@ export function SendMoney() {
   });
   const [receiverFound, setReceiverFound] = useState<boolean | null>(null);
 
-  const dailyLimit = 5000;
-  const spent = 1800;
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  const dailyLimit = user?.daily_limit || 5000;
+  const spent = user?.today_spent || 0;
   const remaining = dailyLimit - spent;
 
   const handleUsernameChange = (value: string) => {
-    setFormData({ ...formData, receiverUsername: value });
-    if (value.length > 3) {
-      setTimeout(() => setReceiverFound(true), 500);
+    setFormData(prev => ({ ...prev, receiverUsername: value }));
+    if (value.trim().length > 2) {
+      setReceiverFound(true);
     } else {
       setReceiverFound(null);
     }
@@ -73,6 +74,8 @@ export function SendMoney() {
                 onChange={(e) => handleUsernameChange(e.target.value)}
                 helperText="Username must be bank-assigned (not phone number)"
                 required
+                autoComplete="off"
+                spellCheck="false"
               />
               {receiverFound && (
                 <div className="mt-2 flex items-center gap-2 text-emerald-600">

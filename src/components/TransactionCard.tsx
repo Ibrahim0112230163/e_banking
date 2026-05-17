@@ -1,20 +1,24 @@
-import { ArrowUpRight, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { SecurityBadge } from './SecurityBadge';
 
 interface TransactionCardProps {
-  receiverUsername: string;
+  receiverUsername?: string;
+  senderUsername?: string;
   amount: number;
   timestamp: string;
-  status: 'success' | 'rejected' | 'pending';
+  status: 'success' | 'rejected' | 'pending' | 'failed' | 'aborted';
   showSecurityBadge?: boolean;
+  type?: 'sent' | 'received';
 }
 
 export function TransactionCard({
   receiverUsername,
+  senderUsername,
   amount,
   timestamp,
   status,
   showSecurityBadge = true,
+  type = 'sent',
 }: TransactionCardProps) {
   const statusConfig = {
     success: {
@@ -29,6 +33,18 @@ export function TransactionCard({
       bgColor: 'bg-red-50',
       label: 'Rejected',
     },
+    failed: {
+      icon: XCircle,
+      color: 'text-destructive',
+      bgColor: 'bg-red-50',
+      label: 'Failed',
+    },
+    aborted: {
+      icon: XCircle,
+      color: 'text-destructive',
+      bgColor: 'bg-red-50',
+      label: 'Aborted',
+    },
     pending: {
       icon: Clock,
       color: 'text-amber-600',
@@ -37,23 +53,27 @@ export function TransactionCard({
     },
   };
 
-  const config = statusConfig[status];
+  const config = statusConfig[status] || statusConfig.pending;
   const StatusIcon = config.icon;
+  const displayName = type === 'received' ? senderUsername : receiverUsername;
+  const TransactionIcon = type === 'received' ? ArrowDownLeft : ArrowUpRight;
+  const amountSign = type === 'received' ? '+' : '-';
+  const amountColor = type === 'received' ? 'text-emerald-600' : 'text-foreground';
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-full ${config.bgColor}`}>
-            <ArrowUpRight size={20} className={config.color} />
+            <TransactionIcon size={20} className={config.color} />
           </div>
           <div>
-            <p className="font-medium">@{receiverUsername}</p>
+            <p className="font-medium">@{displayName || 'Unknown'}</p>
             <p className="text-sm text-muted-foreground">{timestamp}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="font-semibold text-lg">-৳{amount.toFixed(2)}</p>
+          <p className={`font-semibold text-lg ${amountColor}`}>{amountSign}৳{amount.toFixed(2)}</p>
           <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${config.bgColor} mt-1`}>
             <StatusIcon size={12} className={config.color} />
             <span className={`text-xs font-medium ${config.color}`}>{config.label}</span>

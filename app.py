@@ -273,7 +273,7 @@ def get_user(username):
 
 @app.route('/transactions/<username>', methods=['GET'])
 def get_transactions(username):
-    """Get user's transaction history"""
+    """Get user's transaction history (both sent and received)"""
     try:
         user_profile = get_user_profile(username)
         if not user_profile:
@@ -283,19 +283,58 @@ def get_transactions(username):
         if not user_account:
             return jsonify({"status": "error", "message": "Account not found"}), 404
 
-        # Fetch transactions
-        response = supabase.table('transactions').select('*').eq('sender_account_id', user_account['id']).order('created_at', desc=True).limit(20).execute()
+        # Fetch both sent AND received transactions
+        sent_response = supabase.table('transactions').select('*').eq('sender_account_id', user_account['id']).order('created_at', desc=True).limit(20).execute()
+        
+        # Get receiver's profile ID to fetch received transactions
+        received_response = supabase.table('transactions').select('*').eq('receiver_account_id', user_account['id']).order('created_at', desc=True).limit(20).execute()
 
         transactions = []
-        if response.data:
-            for txn in response.data:
+        
+        # Process sent transactions
+        if sent_response.data:
+            for txn in sent_response.data:
+                # Get receiver name
+                receiver_account = supabase.table('accounts').select('profile_id').eq('id', txn['receiver_account_id']).execute()
+                receiver_name = 'Unknown'
+                if receiver_account.data:
+                    receiver_profile = supabase.table('profiles').select('registration_number').eq('id', receiver_account.data[0]['profile_id']).execute()
+                    if receiver_profile.data:
+                        receiver_name = receiver_profile.data[0]['registration_number']
+                
                 transactions.append({
                     "id": txn['id'],
                     "amount": float(txn['amount']),
                     "status": txn['status'],
                     "created_at": txn['created_at'],
-                    "reference": txn['reference']
+                    "reference": txn['reference'],
+                    "receiver_username": receiver_name,
+                    "type": "sent"
                 })
+        
+        # Process received transactions
+        if received_response.data:
+            for txn in received_response.data:
+                # Get sender name
+                sender_account = supabase.table('accounts').select('profile_id').eq('id', txn['sender_account_id']).execute()
+                sender_name = 'Unknown'
+                if sender_account.data:
+                    sender_profile = supabase.table('profiles').select('registration_number').eq('id', sender_account.data[0]['profile_id']).execute()
+                    if sender_profile.data:
+                        sender_name = sender_profile.data[0]['registration_number']
+                
+                transactions.append({
+                    "id": txn['id'],
+                    "amount": float(txn['amount']),
+                    "status": txn['status'],
+                    "created_at": txn['created_at'],
+                    "reference": txn['reference'],
+                    "sender_username": sender_name,
+                    "type": "received"
+                })
+        
+        # Sort all transactions by date (most recent first)
+        transactions.sort(key=lambda x: x['created_at'], reverse=True)
 
         return jsonify({
             "status": "success",
@@ -401,6 +440,11 @@ def serve_static(path):
     requested_path = os.path.join(dist_dir, path)
     if os.path.exists(requested_path) and os.path.isfile(requested_path):
         return app.send_static_file(path)
+    return app.send_static_file('index.html')
+
+@app.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors by serving index.html for SPA routing"""
     return app.send_static_file('index.html')
 
 if __name__ == '__main__':
