@@ -2,6 +2,7 @@
 
 :root {
   --font-size: 16px;
+<<<<<<< HEAD
   --background: #ffffff;
   --foreground: #1a1a1a;
   --card: #ffffff;
@@ -41,6 +42,34 @@
   --sidebar-accent-foreground: #0D7C66;
   --sidebar-border: rgba(0, 0, 0, 0.1);
   --sidebar-ring: #0D7C66;
+=======
+  --background: #F8FAFC;
+  --foreground: #0A1F44;
+  --card: #ffffff;
+  --card-foreground: #0A1F44;
+  --popover: #ffffff;
+  --popover-foreground: #0A1F44;
+  --primary: #0A1F44;
+  --primary-foreground: #ffffff;
+  --secondary: #163D7A;
+  --secondary-foreground: #ffffff;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #00C2FF;
+  --accent-foreground: #ffffff;
+  --destructive: #FF4D4D;
+  --destructive-foreground: #ffffff;
+  --success: #00D1A0;
+  --success-foreground: #ffffff;
+  --border: #E2E8F0;
+  --input: #F1F5F9;
+  --input-background: #F8FAFC;
+  --radius: 1rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+>>>>>>> origin/updated
 }
 
 .dark {

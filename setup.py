@@ -61,11 +61,20 @@ def setup_backend():
     # Install Python dependencies
     print_info("\nInstalling Python dependencies...")
     dependencies = [
+<<<<<<< HEAD
         ("flask", "Flask web framework"),
         ("flask-cors", "CORS support for Flask"),
         ("pycryptodome", "Cryptographic library"),
         ("supabase", "Supabase Python client"),
         ("python-dotenv", "Environment variable management"),
+=======
+        ("fastapi", "FastAPI web framework"),
+        ("uvicorn", "ASGI server for FastAPI"),
+        ("pycryptodome", "Cryptographic library"),
+        ("supabase", "Supabase Python client"),
+        ("python-dotenv", "Environment variable management"),
+        ("psycopg2-binary", "PostgreSQL database adapter"),
+>>>>>>> origin/updated
     ]
     
     for package, description in dependencies:

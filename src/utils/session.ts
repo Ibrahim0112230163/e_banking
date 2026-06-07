@@ -6,11 +6,19 @@ export interface UserSession {
   k1: string; // Secret key for HMAC
   k2: string; // Password key for encryption
   bp: string; // Biometric template
+<<<<<<< HEAD
   t: string; // Last successful timestamp
+=======
+  last_t: number; // Last successful timestamp
+>>>>>>> origin/updated
   balance: number;
   accountId: string; // Supabase account ID
   daily_limit: number;
   today_spent: number;
+<<<<<<< HEAD
+=======
+  last_spent_reset_date: string;
+>>>>>>> origin/updated
 }
 
 const SESSION_KEY = 'user_session';
@@ -28,10 +36,17 @@ export function clearUserSession(): void {
   localStorage.removeItem(SESSION_KEY);
 }
 
+<<<<<<< HEAD
 export function updateUserTimestamp(newT: string): void {
   const session = getUserSession();
   if (session) {
     session.t = newT;
+=======
+export function updateUserTimestamp(newT: number): void {
+  const session = getUserSession();
+  if (session) {
+    session.last_t = newT;
+>>>>>>> origin/updated
     saveUserSession(session);
   }
 }

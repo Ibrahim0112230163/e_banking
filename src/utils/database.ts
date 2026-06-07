@@ -9,10 +9,18 @@ interface UserProfile {
   hmac_key_k1: string;
   password_key_k2: string;
   fingerprint_bp: string;
+<<<<<<< HEAD
   timestamp_t: string;
   balance: number;
   daily_limit: number;
   today_spent: number;
+=======
+  last_t: number;
+  balance: number;
+  daily_limit: number;
+  today_spent: number;
+  last_spent_reset_date: string;
+>>>>>>> origin/updated
 }
 
 interface UserAccount {

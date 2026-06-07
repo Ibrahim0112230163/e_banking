@@ -17,15 +17,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
+<<<<<<< HEAD
           <label className="block mb-2 text-foreground">
             {label} {showK2Label && <span className="text-[#0D7C66]">(K2)</span>}
+=======
+          <label className="block mb-2 text-sm font-semibold text-foreground/80 tracking-wide uppercase">
+            {label} {showK2Label && <span className="text-accent">(K2)</span>}
+>>>>>>> origin/updated
           </label>
         )}
         <div className="relative">
           <input
             ref={ref}
             type={inputType}
+<<<<<<< HEAD
             className={`w-full px-4 py-3 bg-input-background rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-[#0D7C66] transition-all ${error ? 'border-destructive' : ''} ${className}`}
+=======
+            className={`w-full px-4 py-3.5 bg-white rounded-xl border border-border focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 placeholder:text-muted-foreground/50 ${error ? 'border-destructive focus:ring-destructive/10' : ''} ${className}`}
+>>>>>>> origin/updated
             {...props}
           />
           {isPassword && (

@@ -26,7 +26,13 @@ export interface TransferResponse {
 
 export async function processTransfer(
   username: string,
+<<<<<<< HEAD
   encryptedPayload: string
+=======
+  encryptedPayload: string,
+  iv: string,
+  t: number
+>>>>>>> origin/updated
 ): Promise<TransferResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/transfer`, {
@@ -35,6 +41,11 @@ export async function processTransfer(
       body: JSON.stringify({
         username,
         payload: encryptedPayload,
+<<<<<<< HEAD
+=======
+        iv: iv,
+        T: t
+>>>>>>> origin/updated
       }),
     });
 
@@ -86,7 +97,18 @@ export async function getTransactionHistory(username: string) {
   }
 }
 
+<<<<<<< HEAD
 export async function registerAccount(data: { username: string; password: string; nid?: string; activationCode?: string }) {
+=======
+export async function registerAccount(data: { 
+  username: string; 
+  password: string; 
+  nid: string; 
+  activationCode: string; 
+  macAddress: string; 
+  bp_hash: string;
+}) {
+>>>>>>> origin/updated
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
@@ -118,11 +140,19 @@ export async function loginUser(username: string, password: string): Promise<{
     k1: string;
     k2: string;
     bp: string;
+<<<<<<< HEAD
     t: string;
+=======
+    last_t: number;
+>>>>>>> origin/updated
     balance: number;
     accountId: string;
     daily_limit: number;
     today_spent: number;
+<<<<<<< HEAD
+=======
+    last_spent_reset_date: string;
+>>>>>>> origin/updated
   };
 }> {
   try {

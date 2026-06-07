@@ -9,6 +9,7 @@ export function SecurityBadge({ type, className = '' }: SecurityBadgeProps) {
   const badges = {
     'device-verified': {
       icon: Shield,
+<<<<<<< HEAD
       text: 'Device Verified',
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50',
@@ -30,6 +31,29 @@ export function SecurityBadge({ type, className = '' }: SecurityBadgeProps) {
       text: 'Integrity Check',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
+=======
+      text: 'Encrypted Core',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10',
+    },
+    'hmac-verified': {
+      icon: CheckCircle,
+      text: 'HMAC Validated',
+      color: 'text-success',
+      bgColor: 'bg-success/10',
+    },
+    'aes-secured': {
+      icon: Lock,
+      text: 'AES-256 GCM',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
+    },
+    'integrity-check': {
+      icon: Hash,
+      text: 'Verified Hash',
+      color: 'text-secondary',
+      bgColor: 'bg-secondary/10',
+>>>>>>> origin/updated
     },
   };
 
