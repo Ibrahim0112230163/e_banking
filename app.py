@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import uuid
 from flask_cors import CORS
 from crypto import CryptoEngine
@@ -7,6 +7,7 @@ from supabase import create_client, Client
 from supabase_config import SUPABASE_URL as CONFIG_URL, SUPABASE_KEY as CONFIG_KEY
 import os
 from dotenv import load_dotenv
+from functools import wraps
 
 # Load .env.backend first so env vars override supabase_config.py defaults
 load_dotenv(dotenv_path='.env.backend')
@@ -20,6 +21,23 @@ crypto = CryptoEngine()
 
 # Initialize Supabase client (uses service role key from .env.backend)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# In-memory session store: token -> username
+active_sessions: dict[str, str] = {}
+
+def generate_session_token() -> str:
+    token = str(uuid.uuid4())
+    return token
+
+def require_auth(f):
+    """Decorator to require a valid session token."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not token or token not in active_sessions:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 # ========================================
 # Helper Functions
@@ -131,8 +149,12 @@ def login():
         if not user_account:
             return jsonify({"status": "error", "message": "Account not found"}), 404
 
+        token = generate_session_token()
+        active_sessions[token] = username
+
         return jsonify({
             "status": "success",
+            "token": token,
             "user": {
                 "id": user_profile['id'],
                 "username": user_profile['registration_number'],
@@ -153,6 +175,7 @@ def login():
 
 
 @app.route('/transfer', methods=['POST'])
+@require_auth
 def process_transfer():
     """
     Process secure money transfer with cryptographic verification
@@ -246,6 +269,7 @@ def process_transfer():
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 
 @app.route('/user/<username>', methods=['GET'])
+@require_auth
 def get_user(username):
     """Get user profile and account information"""
     try:
@@ -272,6 +296,7 @@ def get_user(username):
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 
 @app.route('/transactions/<username>', methods=['GET'])
+@require_auth
 def get_transactions(username):
     """Get user's transaction history (both sent and received)"""
     try:
@@ -419,6 +444,7 @@ def register():
         return jsonify({"status": "error", "message": f"Database error: {str(e)}"}), 500
 
 @app.route('/check-receiver/<username>', methods=['GET'])
+@require_auth
 def check_receiver(username):
     """Check if a receiver username exists"""
     try:
@@ -437,9 +463,9 @@ def check_receiver(username):
 def serve_static(path):
     """Serve static files or index.html for SPA routing"""
     dist_dir = os.path.abspath(app.static_folder)
-    requested_path = os.path.join(dist_dir, path)
-    if os.path.exists(requested_path) and os.path.isfile(requested_path):
-        return app.send_static_file(path)
+    requested_path = os.path.realpath(os.path.join(dist_dir, path))
+    if requested_path.startswith(dist_dir) and os.path.isfile(requested_path):
+        return send_from_directory(dist_dir, os.path.relpath(requested_path, dist_dir))
     return app.send_static_file('index.html')
 
 @app.errorhandler(404)

@@ -2,6 +2,7 @@
 export interface UserSession {
   id: string;
   username: string;
+  token: string;
   k1: string; // Secret key for HMAC
   k2: string; // Password key for encryption
   bp: string; // Biometric template

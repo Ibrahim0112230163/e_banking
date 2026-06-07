@@ -35,6 +35,7 @@ export function Login() {
       saveUserSession({
         id: user.id,
         username: user.username,
+        token: result.token || '',
         k1: user.k1,
         k2: user.k2,
         bp: user.bp,

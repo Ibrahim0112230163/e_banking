@@ -14,7 +14,7 @@ export function TransactionResult() {
     return null;
   }
 
-  const calculatedBalance = newBalance !== undefined ? newBalance : (3200 - amount);
+  const calculatedBalance = newBalance !== undefined ? newBalance : undefined;
   const newTimestamp = new Date().toLocaleString('en-GB', {
     day: '2-digit',
     month: '2-digit',
@@ -105,7 +105,7 @@ export function TransactionResult() {
             <span className="text-muted-foreground">Amount:</span>
             <span className="font-semibold text-lg">৳{amount.toFixed(2)}</span>
           </div>
-          {isSuccess && (
+          {isSuccess && calculatedBalance !== undefined && (
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <span className="text-muted-foreground">New Balance:</span>
               <span className="font-semibold text-[#0D7C66]">৳{calculatedBalance.toFixed(2)}</span>

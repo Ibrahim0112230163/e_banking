@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { TransactionCard } from '../components/TransactionCard';
 import { ArrowLeft, Filter } from 'lucide-react';
 import { getUserSession } from '../../utils/session';
+import { getTransactionHistory } from '../../utils/api';
 
 interface Transaction {
   id: string;
@@ -34,10 +35,7 @@ export function TransactionHistory() {
 
     const fetchTransactions = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env?.VITE_BACKEND_URL || 'http://localhost:5000'}/transactions/${session.username}`
-        );
-        const data = await response.json();
+        const data = await getTransactionHistory(session.username);
 
         if (data.status === 'success' && data.transactions) {
           setAllTransactions(data.transactions);

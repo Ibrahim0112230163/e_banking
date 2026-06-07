@@ -1,5 +1,4 @@
-import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router';
 import { Button } from '../components/Button';
 import { SecurityBadge } from '../components/SecurityBadge';
 import { DailyLimitIndicator } from '../components/DailyLimitIndicator';
@@ -23,14 +22,8 @@ export function Dashboard() {
   const navigate = useNavigate();
   const session = getUserSession();
 
-  useEffect(() => {
-    if (!session) {
-      navigate('/login');
-    }
-  }, [session, navigate]);
-
   if (!session) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const handleLogout = () => {
